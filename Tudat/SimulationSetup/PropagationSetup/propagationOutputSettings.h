@@ -44,7 +44,8 @@ enum PropagationDependentVariables
     rotation_matrix_to_body_fixed_frame_variable = 15,
     intermediate_aerodynamic_rotation_matrix_variable = 16,
     relative_body_aerodynamic_orientation_angle_variable = 17,
-    body_fixed_airspeed_based_velocity_variable = 18
+    body_fixed_airspeed_based_velocity_variable = 18,
+    thrust_force_dependent_variable = 19
 
 };
 
