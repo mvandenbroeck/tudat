@@ -820,7 +820,7 @@ createThrustAcceleratioModel(
                 }
                 thrustAccelerationSettings->interpolatorInterface_->resetRotationFunction(
                             boost::bind( &reference_frames::getVelocityBasedLvlhToInertialRotationFromFunctions,
-                                         vehicleStateFunction, centralBodyStateFunction, true ) );
+                                         vehicleStateFunction, centralBodyStateFunction, thrustAccelerationSettings->doesNaxisPointAwayFromCentralBody_ ) );
             }
             else
             {

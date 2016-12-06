@@ -250,9 +250,9 @@ class ThrustAccelerationSettings: public AccelerationSettings
 {
 public:
 
-    //! Constructor from separate magnitude and diretion settings.
+    //! Constructor from separate magnitude and direction settings.
     /*!
-     * Constructor from separate magnitude and diretion settings.
+     * Constructor from separate magnitude and direction settings.
      * \param thrustDirectionGuidanceSettings Settings for the direction of the thrust
      * \param thrustMagnitudeSettings Settings for the magnitude of the thrust
      */
@@ -278,9 +278,10 @@ public:
             fullThrustInterpolator,
             const boost::function< double( const double ) > specificImpulseFunction,
             const ThrustFrames thrustFrame = unspecified_thurst_frame,
+            bool doesNaxisPointAwayFromCentralBody = true,
             const std::string centralBody = "" ):
         AccelerationSettings( basic_astrodynamics::thrust_acceleration ), thrustFrame_( thrustFrame ),
-        centralBody_( centralBody )
+        doesNaxisPointAwayFromCentralBody_( doesNaxisPointAwayFromCentralBody ), centralBody_( centralBody )
     {
         interpolatorInterface_ =
                 boost::make_shared< FullThrustInterpolationInterface >( fullThrustInterpolator );
@@ -309,6 +310,13 @@ public:
      *  only used if interpolatorInterface_ is set
      */
     ThrustFrames thrustFrame_;
+
+    //! Identifier of direction of N axis of lvlh_thrust_frame.
+    /*!
+     *  Identifier of direction of N axis of lvlh_thrust_frame. False by default, meaning that N axis points away
+     *  from central body by default.
+     */
+    bool doesNaxisPointAwayFromCentralBody_;
 
     //! Central body identifier for thrustFrame.
     /*!

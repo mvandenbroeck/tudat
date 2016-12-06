@@ -354,7 +354,7 @@ private:
 
         // Iterate over all intervals and calculate denominators
         int currentIterationStart;
-        denominators.resize( numberOfIndependentValues_ );
+        denominators.resize( numberOfIndependentValues_ + 1 );
         for( int i = offsetEntries_; i <= numberOfIndependentValues_ - offsetEntries_; i++ )
         {
             // Determine start index in independent variables for current polynomial
