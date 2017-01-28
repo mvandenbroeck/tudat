@@ -235,6 +235,36 @@ Eigen::Matrix3d getVelocityBasedLvlhToInertialRotationFromFunctions(
 Eigen::Quaterniond getVelocityBasedLvlhToPlanetocentricRotationKeplerian(
         const Eigen::Matrix< double, 6, 1 > spacecraftKeplerianState );
 
+//! Get rotation from vehicle-centered RTN frame to inertial (I) frame.
+/*!
+ * Returns rotation from inertial (i) to the velocity based RTN frame. The velocity based RTN frame is
+ * a right-handed orthogonal frame defined as follows:
+ * x-axis in radial direction,
+ * y-axis in transverse direction,
+ * z-axis normal to the orbital plane.
+ * \param vehicleState State of the vehicle for which the RTN frame is to be computed.
+ * \param centralBodyState State of the central body w.r.t. which the RTN frame is to be computed.
+ * \return RTN to inertial (I) frame transformation matrix.
+ */
+Eigen::Matrix3d getRtnToInertialRotation(const basic_mathematics::Vector6d& vehicleState,
+                                                       const basic_mathematics::Vector6d& centralBodyState );
+
+//! Get rotation from vehicle-centered RTN frame to inertial (I) frame.
+/*!
+ * Returns rotation from inertial (i) to the vehicle-centered RTN frame. The RTN frame is
+ * a right-handed orthogonal frame defined as follows:
+ * x-axis in radial direction,
+ * y-axis in transverse direction,
+ * z-axis normal to the orbital plane.
+ * \param vehicleStateFunction Function returning the state of the vehicle for which the RTN frame is to be computed
+ * \param centralBodyStateFunction Function returning the state of the central body w.r.t. which the RTN frame is to be
+ * computed
+ * \return Vehicle-centered to inertial (I) frame transformation matrix.
+ */
+Eigen::Matrix3d getRtnToInertialRotationFromFunctions(
+        const boost::function< basic_mathematics::Vector6d( ) >& vehicleStateFunction,
+        const boost::function< basic_mathematics::Vector6d( ) >& centralBodyStateFunction );
+
 //! Get inertial (I) to rotating planetocentric (R) reference frame transformation quaternion.
 /*!
  * Returns transformation quaternion from inertial referenceframe (I) to the rotating

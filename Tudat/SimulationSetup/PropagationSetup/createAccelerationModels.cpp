@@ -798,7 +798,7 @@ createThrustAcceleratioModel(
         }
         else if( thrustAccelerationSettings->thrustFrame_ != inertial_thurst_frame )
         {
-            // Create rotation function from thrust-frame to propagation frame.
+            // Create rotation function from velocity-based LVLH thrust-frame to propagation frame.
             if( thrustAccelerationSettings->thrustFrame_ == lvlh_thrust_frame )
             {
                 boost::function< basic_mathematics::Vector6d( ) > vehicleStateFunction =
@@ -821,6 +821,30 @@ createThrustAcceleratioModel(
                 thrustAccelerationSettings->interpolatorInterface_->resetRotationFunction(
                             boost::bind( &reference_frames::getVelocityBasedLvlhToInertialRotationFromFunctions,
                                          vehicleStateFunction, centralBodyStateFunction, thrustAccelerationSettings->doesNaxisPointAwayFromCentralBody_ ) );
+            }
+            // Create rotation function from RTN thrust-frame to propagation frame.
+            if( thrustAccelerationSettings->thrustFrame_ == rtn_thrust_frame )
+            {
+                boost::function< basic_mathematics::Vector6d( ) > vehicleStateFunction =
+                        boost::bind( &Body::getState, bodyMap.at( nameOfBodyUndergoingThrust ) );
+                boost::function< basic_mathematics::Vector6d( ) > centralBodyStateFunction;
+
+                if( ephemerides::isFrameInertial( thrustAccelerationSettings->centralBody_ ) )
+                {
+                    centralBodyStateFunction =  boost::lambda::constant( basic_mathematics::Vector6d::Zero( ) );
+                }
+                else
+                {
+                    if( bodyMap.count( thrustAccelerationSettings->centralBody_ ) == 0 )
+                    {
+                        throw std::runtime_error( "Error when creating thrust acceleration, input central body not found" );
+                    }
+                    centralBodyStateFunction =
+                            boost::bind( &Body::getState, bodyMap.at( thrustAccelerationSettings->centralBody_ ) );
+                }
+                thrustAccelerationSettings->interpolatorInterface_->resetRotationFunction(
+                            boost::bind( &reference_frames::getRtnToInertialRotationFromFunctions,
+                                         vehicleStateFunction, centralBodyStateFunction ) );
             }
             else
             {

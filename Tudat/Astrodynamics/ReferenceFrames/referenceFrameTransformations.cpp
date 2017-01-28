@@ -261,6 +261,43 @@ Eigen::Quaterniond getVelocityBasedLvlhToPlanetocentricRotationKeplerian(
     return frameTransformationQuaternion;
 }
 
+//! Get rotation from vehicle-centered RTN frame to inertial frame (I) frame.
+Eigen::Matrix3d getRtnToInertialRotation(
+        const basic_mathematics::Vector6d& vehicleState,
+        const basic_mathematics::Vector6d& centralBodyState )
+{
+    Eigen::Vector3d vehicleVelocity, vehicleRadius;
+    vehicleRadius = vehicleState.head( 3 ) - centralBodyState.head( 3 );
+    vehicleVelocity = vehicleState.tail( 3 ) - centralBodyState.tail( 3 );
+
+    Eigen::Vector3d unitR = vehicleRadius/ vehicleRadius.norm( );
+    if ( vehicleRadius.cross( vehicleVelocity ).norm( ) == 0.0 )
+    {
+        std::string errorMessage = "Division by zero: radius and velocity are in the same direction.";
+        throw std::runtime_error( errorMessage );
+    }
+
+    Eigen::Vector3d unitN =  ( vehicleRadius.cross( vehicleVelocity ) ).normalized( );
+
+    Eigen::Vector3d unitT = ( unitN.cross( vehicleRadius ) ).normalized( );
+
+    Eigen::Matrix3d transformationMatrix;
+    transformationMatrix << unitR( 0 ), unitT( 0 ), unitN( 0 ),
+                            unitR( 1 ), unitT( 1 ), unitN( 1 ),
+                            unitR( 2 ), unitT( 2 ), unitN( 2 );
+
+    return transformationMatrix;
+}
+
+//! Get rotation from vehicle-centered RTN frame to inertial frame (I) frame.
+Eigen::Matrix3d getRtnToInertialRotationFromFunctions(
+        const boost::function< basic_mathematics::Vector6d( ) >& vehicleStateFunction,
+        const boost::function< basic_mathematics::Vector6d( ) >& centralBodyStateFunction )
+{
+    return getRtnToInertialRotation(
+                vehicleStateFunction( ), centralBodyStateFunction( ) );
+}
+
 //! Get inertial (I) to rotating planetocentric (R) reference frame transformtion quaternion.
 Eigen::Quaterniond getInertialToPlanetocentricFrameTransformationQuaternion(
         const double angleFromXItoXR )
