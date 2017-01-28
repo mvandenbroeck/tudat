@@ -823,7 +823,7 @@ createThrustAcceleratioModel(
                                          vehicleStateFunction, centralBodyStateFunction, thrustAccelerationSettings->doesNaxisPointAwayFromCentralBody_ ) );
             }
             // Create rotation function from RTN thrust-frame to propagation frame.
-            if( thrustAccelerationSettings->thrustFrame_ == rtn_thrust_frame )
+            else if( thrustAccelerationSettings->thrustFrame_ == rtn_thrust_frame )
             {
                 boost::function< basic_mathematics::Vector6d( ) > vehicleStateFunction =
                         boost::bind( &Body::getState, bodyMap.at( nameOfBodyUndergoingThrust ) );
