@@ -276,6 +276,30 @@ public:
                 coefficientD_ * secondDerivativeOfCurve_[ lowerEntry_ + 1 ];
     }
 
+    // Included by R. Hoogendoorn
+    std::vector < std::vector<IndependentVariableType> > GetCoefficients(){
+        // yi = a + b(x-xi) + c(x-xi)^2 + d(x-xi)^3
+        std::vector < std::vector<IndependentVariableType> > Coefficients;
+        std::vector <IndependentVariableType> a_coefficients = dependentValues_; // DependentValues & Independent need to be same type
+        std::vector <IndependentVariableType> b_coefficients(0);
+        std::vector <IndependentVariableType> c_coefficients(0);
+        std::vector <IndependentVariableType> d_coefficients(0);
+        for (int i = 0 ; i<(secondDerivativeOfCurve_.size()-1) ; i++){ // Source Burden & Faires
+            c_coefficients.push_back( secondDerivativeOfCurve_[i]/2 );
+        }
+
+        for (int i = 0 ; i<(a_coefficients.size()-1) ; i++){ // Source Burden & Faires
+            b_coefficients.push_back( (a_coefficients[i+1] - a_coefficients[i])/(hCoefficients_[i])
+                    - (hCoefficients_[i]/3)*( 2*c_coefficients[i] + c_coefficients[i+1] ) );
+
+            d_coefficients.push_back( (c_coefficients[i+1] - c_coefficients[i])/(3*hCoefficients_[i] ) );
+        }
+        Coefficients.push_back(a_coefficients);
+        Coefficients.push_back(b_coefficients);
+        Coefficients.push_back(c_coefficients);
+        Coefficients.push_back(d_coefficients);
+        return Coefficients;
+    }
 protected:
 
 private:
@@ -308,7 +332,7 @@ private:
         rCoefficients_.resize( numberOfDataPoints_ - 2 );
 
         // Temporary value vector.
-        std::vector< IndependentVariableType > hCoefficients_;
+//        std::vector< IndependentVariableType > hCoefficients_; // changed by R. Hoogendoorn
         hCoefficients_.resize( numberOfDataPoints_ - 1 );
 
         // Set second derivatives of curve to zero at endpoints, i.e. impose natural spline
@@ -362,6 +386,12 @@ private:
      *  Vector filled with second derivative of curvature of each point.
      */
     std::vector< DependentVariableType > secondDerivativeOfCurve_;
+
+    //! Vector filled with width of each spline. // Added by R. Hoogendoorn
+    /*!
+     *  Vector filled with width of each spline.
+     */
+    std::vector< IndependentVariableType > hCoefficients_;
 
     //! The number of datapoints.
     /*!
